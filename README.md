@@ -6,7 +6,7 @@ This work is based off of the work by [WANDS](https://wands.sg/research/wifi/Ath
 
 ## About
 
-This is modified version of the mainline Linux kernel v5.4 Ath9k Qualcomm wireless drive. Incorporating changes similar to those found [here](https://github.com/xieyaxiongfly/Atheros-CSI-Tool), only for a more relevant kernel version.
+This is modified version of the mainline Linux kernel v5.4 Ath9k Qualcomm wireless driver. Incorporating changes similar to those found [here](https://github.com/xieyaxiongfly/Atheros-CSI-Tool), only for a more relevant kernel version.
 
 ## Building
 
@@ -44,6 +44,11 @@ git checkout v5.4
 ### In tree
 
 To build the module as part of the kernel you simply need to place the modified driver into the kernel source tree and perform a standard kernel build.
+
+``` bash
+rm drivers/net/wireless/ath/ath9k/*
+cp -r $(THIS REPO)/* drivers/net/wireless/ath/ath9k/
+```
 
 You will need to prepare the kernel to run on the target system, this is done through a `.config` file and it can be extracted from your existing system.
 
@@ -102,7 +107,7 @@ finally reboot and check the new kernel is being used with `uname -r`
 
 An out of tree build means that you simply pass the kernel tree into make with the `-C` option. This is done using the `KDIR` variable, set it appropriately.
 
-As the Ath9k driver has the include structure of a potato it is challenging to build it out of tree as the driver has absolute include paths that traverse higher than the ath9k driver. One solution is to build the entire ath folder or to [patch]() the ath folder to fix up the include fro the ath9k driver. Sorry other ath driver but I have better things to do with my time.
+As the Ath9k driver has the include structure of a potato it is challenging to build it out of tree as the driver has absolute include paths that traverse higher than the ath9k driver. One solution is to build the entire ath folder or to [patch](patches/ath.patch) the ath folder to fix up the include fro the ath9k driver. Sorry other ath driver but I have better things to do with my time.
 
 ```bash
 export KDIR=$HOME/linux # Assuming linux was cloned into home
