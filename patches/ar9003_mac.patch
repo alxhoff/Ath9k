@@ -1,0 +1,91 @@
+diff --git ar9003_mac.c ar9003_mac.c
+index e1fe7a7..3e71277 100644
+--- ar9003_mac.c
++++ ar9003_mac.c
+@@ -17,6 +17,7 @@
+ #include "hw.h"
+ #include "ar9003_mac.h"
+ #include "ar9003_mci.h"
++#include "ar9003_csi.h"
+ 
+ static void ar9003_hw_rx_enable(struct ath_hw *hw)
+ {
+@@ -30,6 +31,7 @@ ar9003_set_txdesc(struct ath_hw *ah, void *ds, struct ath_tx_info *i)
+ 	int checksum = 0;
+ 	u32 val, ctl12, ctl17;
+ 	u8 desc_len;
++	u_int32_t rate_ctl, tries_ctl;
+ 
+ 	desc_len = ((AR_SREV_9462(ah) || AR_SREV_9565(ah)) ? 0x18 : 0x17);
+ 
+@@ -149,12 +151,38 @@ ar9003_set_txdesc(struct ath_hw *ah, void *ds, struct ath_tx_info *i)
+ 		| set11nRateFlags(i->rates, 2)
+ 		| set11nRateFlags(i->rates, 3)
+ 		| SM(i->rtscts_rate, AR_RTSCTSRate));
+-
+-	WRITE_ONCE(ads->ctl19, AR_Not_Sounding);
+-
++	
++	/** Set TPC for each Tx series to value passed in in ath_tx_info */
+ 	WRITE_ONCE(ads->ctl20, SM(i->txpower[1], AR_XmitPower1));
+ 	WRITE_ONCE(ads->ctl21, SM(i->txpower[2], AR_XmitPower2));
+ 	WRITE_ONCE(ads->ctl22, SM(i->txpower[3], AR_XmitPower3));
++
++	/** Get Tx rates */
++	rate_ctl = READ_ONCE(ads->ctl14);
++
++	/** If Tx rates greater than MCS0 then set the antenna switch for Tx0 to 0
++     * and set tx_tries to 0, such that frame data exchanges are not retried*/
++	if (MS(rate_ctl, AR_XmitRate3) >= 0x80 ||
++	    MS(rate_ctl, AR_XmitRate2) >= 0x80 ||
++	    MS(rate_ctl, AR_XmitRate1) >= 0x80) {
++		/** Set antenna switches for Tx series 0 
++		 * Original CSI code also set switches for 1-3 but this is inheritently 
++         * done in lines 164-166 */
++		WRITE_ONCE(ads->ctl19, 0);
++		/** Set tx_tries to zero for each Tx series */
++        tries_ctl = READ_ONCE(ads->ctl13);
++        tries_ctl &=
++			~(AR_xmit_data_tries1 | AR_xmit_data_tries2 |
++			  AR_xmit_data_tries3);
++        WRITE_ONCE(ads->ctl13, tries_ctl);
++	} else
++		WRITE_ONCE(ads->ctl19, AR_Not_Sounding);
++
++	/** TODO Why? */
++	if (MS(rate_ctl, AR_XmitRate0) >= 0x80)
++		WRITE_ONCE(ads->ctl19, 0);
++	else
++		WRITE_ONCE(ads->ctl19, AR_Not_Sounding);
+ }
+ 
+ static u16 ar9003_calc_ptr_chksum(struct ar9003_txc *ads)
+@@ -582,6 +610,28 @@ int ath9k_hw_process_rxdesc_edma(struct ath_hw *ah, struct ath_rx_status *rxs,
+ 	if (rxsp->status11 & AR_KeyMiss)
+ 		rxs->rs_status |= ATH9K_RXERR_KEYMISS;
+ 
++	if (rxsp->status11 & AR_KeyMiss)
++		rxs->rs_status |= ATH9K_RXERR_KEYMISS;
++
++	/** Record CSI */
++	/** If a CRC error was detected  */
++	if (rxsp->status11 & AR_CRCErr) {
++		if (rxs->rs_rate >= 0x80) {
++			csi_record_payload(buf_addr + KAL_NUM_DESC_WORDS * 4,
++					   rxs->rs_datalen);
++			csi_record_status(ah, rxs, rxsp,
++					  buf_addr + KAL_NUM_DESC_WORDS * 4);
++		}
++	} else {
++		/** If descriptor is not the final descriptor in a set */
++		if (rxs->rs_more == 1)
++			csi_record_payload(buf_addr + KAL_NUM_DESC_WORDS * 4,
++					   rxs->rs_datalen);
++		if (rxs->rs_rate >= 0x80)
++			csi_record_status(ah, rxs, rxsp,
++					  buf_addr + KAL_NUM_DESC_WORDS * 4);
++	}
++
+ 	return 0;
+ }
+ EXPORT_SYMBOL(ath9k_hw_process_rxdesc_edma);
