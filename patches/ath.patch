@@ -1,0 +1,193 @@
+diff --git drivers/net/wireless/ath/ath5k/reg.h drivers/net/wireless/ath/ath5k/reg.h
+index 0ea1608b47fd..492411dd06e4 100644
+--- drivers/net/wireless/ath/ath5k/reg.h
++++ drivers/net/wireless/ath/ath5k/reg.h
+@@ -34,7 +34,7 @@
+  * released by Atheros and on various debug messages found on the net.
+  */
+ 
+-#include "../reg.h"
++#include "../ath_reg.h"
+ 
+ /*====MAC DMA REGISTERS====*/
+ 
+diff --git drivers/net/wireless/ath/ath9k/Makefile drivers/net/wireless/ath/ath9k/Makefile
+index eff94bcd1f0a..9d80b0e1fdfb 100644
+--- drivers/net/wireless/ath/ath9k/Makefile
++++ drivers/net/wireless/ath/ath9k/Makefile
+@@ -1,4 +1,5 @@
+ # SPDX-License-Identifier: ISC
++ccflags-y += -I $(srctree)/drivers/net/wireless/ath
+ ath9k-y +=	beacon.o \
+ 		gpio.o \
+ 		init.o \
+diff --git drivers/net/wireless/ath/ath9k/ar5008_phy.c drivers/net/wireless/ath/ath9k/ar5008_phy.c
+index dae95402eb3a..50510d7a2301 100644
+--- drivers/net/wireless/ath/ath9k/ar5008_phy.c
++++ drivers/net/wireless/ath/ath9k/ar5008_phy.c
+@@ -16,7 +16,7 @@
+ 
+ #include "hw.h"
+ #include "hw-ops.h"
+-#include "../regd.h"
++#include "regd.h"
+ #include "ar9002_phy.h"
+ #include "ar5008_initvals.h"
+ 
+diff --git drivers/net/wireless/ath/ath9k/common-spectral.h drivers/net/wireless/ath/ath9k/common-spectral.h
+index 011d8ab8b974..f5d0f3595489 100644
+--- drivers/net/wireless/ath/ath9k/common-spectral.h
++++ drivers/net/wireless/ath/ath9k/common-spectral.h
+@@ -17,7 +17,7 @@
+ #ifndef SPECTRAL_H
+ #define SPECTRAL_H
+ 
+-#include "../spectral_common.h"
++#include "spectral_common.h"
+ 
+ /* enum spectral_mode:
+  *
+diff --git drivers/net/wireless/ath/ath9k/common.h drivers/net/wireless/ath/ath9k/common.h
+index f0ab6f9955e4..60c896fdc1e8 100644
+--- drivers/net/wireless/ath/ath9k/common.h
++++ drivers/net/wireless/ath/ath9k/common.h
+@@ -16,7 +16,7 @@
+ 
+ #include <net/mac80211.h>
+ 
+-#include "../ath.h"
++#include "ath.h"
+ 
+ #include "hw.h"
+ #include "hw-ops.h"
+diff --git drivers/net/wireless/ath/ath9k/dfs.h drivers/net/wireless/ath/ath9k/dfs.h
+index c6fa3d5b5d74..3c839f06a06a 100644
+--- drivers/net/wireless/ath/ath9k/dfs.h
++++ drivers/net/wireless/ath/ath9k/dfs.h
+@@ -17,7 +17,7 @@
+ 
+ #ifndef ATH9K_DFS_H
+ #define ATH9K_DFS_H
+-#include "../dfs_pattern_detector.h"
++#include "dfs_pattern_detector.h"
+ 
+ #if defined(CONFIG_ATH9K_DFS_CERTIFIED)
+ /**
+diff --git drivers/net/wireless/ath/ath9k/dfs_debug.c drivers/net/wireless/ath/ath9k/dfs_debug.c
+index 3251c9abe270..ffc01c79dfbc 100644
+--- drivers/net/wireless/ath/ath9k/dfs_debug.c
++++ drivers/net/wireless/ath/ath9k/dfs_debug.c
+@@ -20,7 +20,7 @@
+ 
+ #include "ath9k.h"
+ #include "dfs_debug.h"
+-#include "../dfs_pattern_detector.h"
++#include "dfs_pattern_detector.h"
+ 
+ static struct ath_dfs_pool_stats dfs_pool_stats = { 0 };
+ 
+diff --git drivers/net/wireless/ath/ath9k/eeprom.h drivers/net/wireless/ath/ath9k/eeprom.h
+index 31390af6c33e..c432e5275d8b 100644
+--- drivers/net/wireless/ath/ath9k/eeprom.h
++++ drivers/net/wireless/ath/ath9k/eeprom.h
+@@ -19,7 +19,7 @@
+ 
+ #define AR_EEPROM_MODAL_SPURS   5
+ 
+-#include "../ath.h"
++#include "ath.h"
+ #include <net/cfg80211.h>
+ #include "ar9003_eeprom.h"
+ 
+diff --git drivers/net/wireless/ath/ath9k/hw.h drivers/net/wireless/ath/ath9k/hw.h
+index 2e4489700a85..726faa3fea31 100644
+--- drivers/net/wireless/ath/ath9k/hw.h
++++ drivers/net/wireless/ath/ath9k/hw.h
+@@ -32,7 +32,7 @@
+ #include "btcoex.h"
+ #include "dynack.h"
+ 
+-#include "../regd.h"
++#include "regd.h"
+ 
+ #define ATHEROS_VENDOR_ID	0x168c
+ 
+diff --git drivers/net/wireless/ath/ath9k/reg.h drivers/net/wireless/ath/ath9k/reg.h
+index 653e79611830..c9b783647d36 100644
+--- drivers/net/wireless/ath/ath9k/reg.h
++++ drivers/net/wireless/ath/ath9k/reg.h
+@@ -17,7 +17,7 @@
+ #ifndef REG_H
+ #define REG_H
+ 
+-#include "../reg.h"
++#include "ath_reg.h"
+ 
+ #define AR_CR                0x0008
+ #define AR_CR_RXE            (AR_SREV_9300_20_OR_LATER(ah) ? 0x0000000c : 0x00000004)
+diff --git drivers/net/wireless/ath/reg.h drivers/net/wireless/ath/ath_reg.h
+similarity index 100%
+rename from drivers/net/wireless/ath/reg.h
+rename to drivers/net/wireless/ath/ath_reg.h
+diff --git drivers/net/wireless/ath/carl9170/Makefile drivers/net/wireless/ath/carl9170/Makefile
+index 1a81868ce26d..fa8fb8f62c9b 100644
+--- drivers/net/wireless/ath/carl9170/Makefile
++++ drivers/net/wireless/ath/carl9170/Makefile
+@@ -1,4 +1,5 @@
+ # SPDX-License-Identifier: GPL-2.0-only
++ccflags-y += -I $(srctree)/drivers/net/wireless/ath
+ carl9170-objs := main.o usb.o cmd.o mac.o phy.o led.o fw.o tx.o rx.o
+ carl9170-$(CONFIG_CARL9170_DEBUGFS) += debug.o
+ 
+diff --git drivers/net/wireless/ath/carl9170/carl9170.h drivers/net/wireless/ath/carl9170/carl9170.h
+index 237d0cda1bcb..8527fff5f305 100644
+--- drivers/net/wireless/ath/carl9170/carl9170.h
++++ drivers/net/wireless/ath/carl9170/carl9170.h
+@@ -58,7 +58,7 @@
+ #include "hw.h"
+ #include "fwdesc.h"
+ #include "fwcmd.h"
+-#include "../regd.h"
++#include "regd.h"
+ 
+ #ifdef CONFIG_CARL9170_DEBUGFS
+ #include "debug.h"
+diff --git drivers/net/wireless/ath/carl9170/debug.h drivers/net/wireless/ath/carl9170/debug.h
+index ea4b97524122..b1805977fa94 100644
+--- drivers/net/wireless/ath/carl9170/debug.h
++++ drivers/net/wireless/ath/carl9170/debug.h
+@@ -43,7 +43,7 @@
+ #include "hw.h"
+ #include "fwdesc.h"
+ #include "fwcmd.h"
+-#include "../regd.h"
++#include "regd.h"
+ 
+ struct hw_stat_reg_entry {
+ 	u32 reg;
+diff --git drivers/net/wireless/ath/hw.c drivers/net/wireless/ath/hw.c
+index eae9abf540a7..189bc80da908 100644
+--- drivers/net/wireless/ath/hw.c
++++ drivers/net/wireless/ath/hw.c
+@@ -18,7 +18,7 @@
+ #include <asm/unaligned.h>
+ 
+ #include "ath.h"
+-#include "reg.h"
++#include "ath_reg.h"
+ 
+ #define REG_READ			(common->ops->read)
+ #define REG_WRITE(_ah, _reg, _val)	(common->ops->write)(_ah, _val, _reg)
+diff --git drivers/net/wireless/ath/key.c drivers/net/wireless/ath/key.c
+index 1816b4e7dc26..6db9000ec439 100644
+--- drivers/net/wireless/ath/key.c
++++ drivers/net/wireless/ath/key.c
+@@ -20,7 +20,7 @@
+ #include <net/mac80211.h>
+ 
+ #include "ath.h"
+-#include "reg.h"
++#include "ath_reg.h"
+ 
+ #define REG_READ			(common->ops->read)
+ #define REG_WRITE(_ah, _reg, _val)	(common->ops->write)(_ah, _val, _reg)
