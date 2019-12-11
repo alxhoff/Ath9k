@@ -288,9 +288,9 @@ void csi_record_status(struct ath_hw *ah, struct ath_rx_status *rxs,
 		csi->pkt_status.phyerr = rxs->rs_phyerr; // PHY layer error code
 
 		csi->pkt_status.rssi = rxs->rs_rssi;
-		csi->pkt_status.rssi_ctl0 = rxs->rs_rssi_ctl0;
-		csi->pkt_status.rssi_ctl1 = rxs->rs_rssi_ctl1;
-		csi->pkt_status.rssi_ctl2 = rxs->rs_rssi_ctl2;
+		csi->pkt_status.rssi_ctl0 = rxs->rs_rssi_ctl[0];
+		csi->pkt_status.rssi_ctl1 = rxs->rs_rssi_ctl[1];
+		csi->pkt_status.rssi_ctl2 = rxs->rs_rssi_ctl[2];
 
 		csi->pkt_status.noise = 0; // to be updated
 		csi->pkt_status.rate = rxs->rs_rate; // data rate
