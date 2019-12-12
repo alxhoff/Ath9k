@@ -1,0 +1,39 @@
+# This will run on Travis' 'new' container-based infrastructure
+sudo: false
+
+language: c
+
+os: linux
+
+compiler: gcc
+
+# Blacklist
+branches:
+    only:
+        - master
+
+# Install dependencies
+addons:
+    apt:
+        packages:
+            - build-essential
+            - libncurses-dev
+            - bison
+            - flex
+            - libssl-dev
+            - libelf-dev
+            - git
+
+# Build your code e.g. by calling make
+script:
+    - git clone https://github.com/torvalds/linux
+    - patch -sf -p0 < patches/ath9k.patch
+    - ls linux/drivers/net/wireless/ath/ath9k
+    - cd linux
+    - cp /boot/config-$(uname -r) .config
+    - make olddefconfig
+    - make drivers/net/wireless/ath/ath9k/
+
+
+
+

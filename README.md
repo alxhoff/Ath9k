@@ -18,14 +18,13 @@ Standard Linux kernel prerequisites are required
 
 #### Arch
 
-``` bash
+```bash
 sudo pacman -S base-devel ncurses flex bison openssl libelf
 ```
 
-
 #### Ubuntu
 
-``` bash
+```bash
 sudo apt-get install build-essential libncurses-dev bison flex libssl-dev libelf-dev
 ```
 
@@ -35,7 +34,7 @@ The driver can be built in the kernel source tree or out of the kernel source tr
 
 Either way you will need a copy of the Linux kernel, the driver was updated to use a v5.4 kernel. To download and checkout the required version.
 
-``` bash
+```bash
 git clone https://github.com/torvalds/linux
 cd linux
 git checkout v5.4
@@ -45,30 +44,44 @@ git checkout v5.4
 
 To build the module as part of the kernel you simply need to place the modified driver into the kernel source tree and perform a standard kernel build.
 
-``` bash
+```bash
 rm drivers/net/wireless/ath/ath9k/*
 cp -r $(THIS REPO)/* drivers/net/wireless/ath/ath9k/
 ```
+
+or run the patch to patch the changes into the ath9k folder. Please note this should be done from the directory in which the `linux` folder is.
+
+```bash
+patch -sf -p0 < patches/ath9k.patch
+```
+
+### Config
 
 You will need to prepare the kernel to run on the target system, this is done through a `.config` file and it can be extracted from your existing system.
 
 #### Arch
 
-``` bash
+```bash
 zcat /proc/config.gz > .config
 ```
 
 #### Ubuntu
 
-``` bash
+```bash
 cp /boot/config-$(uname -r) .config
 ```
 
-You will then need to run `menuconfig` as the build system sometimes runs the default config otherwise.
+You will then need to run `menuconfig` or try `olddefconfig` to synchronize the configs.
 
-``` bash
+```bash
 make menuconfig
 ```
+or
+```bash
+make olddefconfig
+```
+
+### Make
 
 You must then perform a normal kernel build and a kernel and module install
 
@@ -76,9 +89,15 @@ You must then perform a normal kernel build and a kernel and module install
 sudo make -j$(nproc) && sudo make modules_install -j$(nproc) && sudo make install -j$(nproc)
 ```
 
+or to build just the ath9k driver
+
+```bash
+sudo make -j$(nproc) drivers/net/wireless/ath/ath9k/
+```
+
 reboot and check if your new kernel is installed, otherwise continue below.
 
-#### Booting from kernel (Not always necessary)
+### Booting from kernel (Not always necessary)
 
 My test machines run Ubuntu so I will detail the process for an Ubuntu machine. Arch machines are dependent on the bootloader you have chosen and, as such, harder to detail.
 
@@ -97,9 +116,7 @@ sudo vim /etc/default/grub
 
 Then add the following to the `GRUB_DEAFULT` line so that it looks like the following
 
-```
-GRUB_DEAFULT="Advanced options for Ubuntu>Ubuntu, with Linux 5.4"
-```
+    GRUB_DEAFULT="Advanced options for Ubuntu>Ubuntu, with Linux 5.4"
 
 finally reboot and check the new kernel is being used with `uname -r`
 
@@ -127,3 +144,7 @@ and reboot.
 [here](https://github.com/alxhoff/dotfiles/blob/master/random_scripts/build_ath9k.sh)
 
 An old build script I made when testing the WANDS Ubuntu 14 implementation. It should give an outline of the manual process, although the kernel build system should handle this automatically as detailed above.
+
+### Travis CI
+
+The Travis CI config (`.travis.yml`) also provides the steps necessary.
