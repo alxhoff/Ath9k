@@ -1,16 +1,28 @@
 # Ath9k CSI Driver for Qualcomm Atheros AR93XX chips
 
+<p>
+  <a href="https://travis-ci.com/alxhoff/Ath9k">
+  <img src="https://travis-ci.com/alxhoff/Ath9k.svg?branch=master">
+  </a>
+  <a href="https://github.com/alxhoff/Ath9k/blob/master/LICENSE">
+    <img src="https://img.shields.io/badge/license-GPLv3-blue.svg" />
+  </a>
+  <a href="https://github.com/torvalds/linux/">
+    <img src="https://img.shields.io/github/v/tag/torvalds/linux?color=red&label=kernel" />
+  </a>
+</p>
+
 ## Credits
 
 This work is based off of the work by [WANDS](https://wands.sg/research/wifi/AtherosCSI/). Cheers!
 
 ## About
 
-This is modified version of the mainline Linux kernel v5.4 Ath9k Qualcomm wireless driver. Incorporating changes similar to those found [here](https://github.com/xieyaxiongfly/Atheros-CSI-Tool), only for a more relevant kernel version.
+This is modified version of the mainline Linux kernel Ath9k Qualcomm wireless driver. Incorporating changes similar to those found [here](https://github.com/xieyaxiongfly/Atheros-CSI-Tool), only for a more relevant kernel version.
 
 ## Building
 
-I recommend not using an old distribution such as Ubuntu 14 etc as Ubuntu itself struggles to keep up to date, but an outdated Ubuntu version are hopelessly behind and will probably have problems with a modern kernel on ancient `gcc` versions. eg. Ubuntu 14 uses `gcc` 4.8 which will give a lot of errors with a 5.4 kernel.
+I recommend not using an old distribution such as Ubuntu 14 etc as Ubuntu itself struggles to keep up to date, but an outdated Ubuntu version are hopelessly behind and will probably have problems with a modern kernel on ancient `gcc` versions. eg. Ubuntu 14 uses `gcc` 4.8 which will give a lot of errors with a 5.4+ kernel.
 
 ### Prerequisites
 
@@ -32,12 +44,11 @@ sudo apt-get install build-essential libncurses-dev bison flex libssl-dev libelf
 
 The driver can be built in the kernel source tree or out of the kernel source tree. Below both methods are described.
 
-Either way you will need a copy of the Linux kernel, the driver was updated to use a v5.4 kernel. To download and checkout the required version.
+Either way you will need a copy of the Linux kernel.
 
 ```bash
 git clone https://github.com/torvalds/linux
 cd linux
-git checkout v5.4
 ```
 
 ### In tree
@@ -99,7 +110,7 @@ reboot and check if your new kernel is installed, otherwise continue below.
 
 ### Booting from kernel (Not always necessary)
 
-My test machines run Ubuntu so I will detail the process for an Ubuntu machine. Arch machines are dependent on the bootloader you have chosen and, as such, harder to detail.
+My test machines run Ubuntu so I will detail the process for an Ubuntu machine. Arch machines are dependent on the bootloader you have chosen and, as such, harder to detail. This example below is for a 5.4 kernel.
 
 Update your initframfs and your grub.
 
